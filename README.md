@@ -69,38 +69,46 @@ Enter hours, minutes, and seconds directly into the **HH : MM : SS** fields.
 ---
 
 ## Requirements
-- No permissions required.
-- Project targets **SDK 20** (minimum Android version depends on your build settings).
+- No runtime permissions required.
+- Minimum Android version: **Android 7.0 (API 24)**. Target/compile SDK: **35**.
 
 
 # Developer Instructions
-## How to build and install the app locally: 
-Optional: If you want to run on an emulator, Android Studio is the recommended IDE to run the application. You will only need to run step 1 if using Android Studio.\
-Run the application via the PersistentTimerApp folder.\
-Step 1: Open up your terminal app and clone the repository: git clone https://github.com/ushaapldg/INET4121-Study-App.git \
-Step 2: Change directory to the app directory: cd INET-4121-Study-App\
-Step 3: Be sure to install any independencies: npm install\
-Step 4: To run the build, use npm run build OR npm start OR npm run dev to run in developer mode.
 
-## Modifications 
-1. Frontend & User Interface (UI)\
-If you are changing how the app looks or how users interact with the screen:\
-•Main Pages: Look in src/pages/ or src/app/ (for Next.js) or pages/ (for Nuxt/Vue). Each file typically corresponds to a URL route (e.g., about.tsx is /about).\
-•Reusable Components: Look in src/components/. This is where you find UI elements like Navbar, Footer, Button, or Card that appear on multiple pages.\
-•Global Styles: Styles are usually in src/styles/ or a file like globals.css. If using Tailwind, configuration is in tailwind.config.js.\
-•Static Assets: Images, icons, and fonts are typically kept in the public/ or src/assets/ folder.
+This is a native Android app written in Kotlin, built with Gradle — there is no Node/npm toolchain involved.
 
-2. Backend & Data Logic\
-If you are changing how data is processed, saved, or retrieved:\
-•API Endpoints: In modern full-stack frameworks (like Next.js), look in src/app/api/. In dedicated backends (Node/Express), look in src/routes/ or src/controllers/.\
-•Database Models: To change how data is structured in your database, look in src/models/ (for Mongoose/Sequelize) or prisma/schema.prisma (if using Prisma).\
-•Business Logic/Services: Complex logic is often abstracted into a src/services/ or src/lib/ folder to keep the controllers clean.
+## Project Structure
+The entire app lives in the `PersistentTimerApp/` directory, which is the Gradle project root:
+- `PersistentTimerApp/app/src/main/java/com/example/persistenttimerapp/` — Kotlin source
+  - `StudySpaceMainActivity.kt` — Calendar + task list screen (the app's launch screen)
+  - `TimerActivity.kt` — Pomodoro timer screen
+  - `DataHelper.kt` — SharedPreferences-backed timer state
+  - `data/` — Room database (`AppDatabase.kt`, `AppDao.kt`), entities (`Task.kt`, `Category.kt`), and `StudyViewModel.kt`
+- `PersistentTimerApp/app/src/main/res/` — layouts, drawables, and string/color resources
 
-3. Application Configuration\
-If you are changing how the app connects to external services or behaves:\
-•Environment Variables: Sensitive data like API keys and database URLs are found in .env or .env.local.\
-•Dependencies: To add or update libraries, modify package.json (JavaScript/TypeScript), requirements.txt (Python), or Gemfile (Ruby).\
-•App Config: Framework-specific settings are in files like next.config.js, nuxt.config.ts, or vite.config.ts.
+## How to build and run locally
+### Option A: Android Studio (recommended)
+1. Install [Android Studio](https://developer.android.com/studio).
+2. Clone the repository: `git clone https://github.com/waffleriles/StudySpace.git`
+3. Open `PersistentTimerApp/` (not the repo root) as the project in Android Studio.
+4. Let Gradle sync finish, then click **Run** with an emulator or a connected device selected.
+
+### Option B: Command line
+1. Clone the repository and `cd PersistentTimerApp`.
+2. Build a debug APK: `./gradlew assembleDebug` (use `gradlew.bat` on Windows).
+3. Install it on a connected device/emulator: `./gradlew installDebug`.
+4. Run unit tests: `./gradlew test`.
+
+## Requirements to build
+- JDK 11+ (bundled with recent Android Studio versions).
+- Android SDK with `compileSdk` 35 installed (Android Studio's SDK Manager handles this automatically).
+- No API keys, environment variables, or backend services are required — the app only reads/writes a local SQLite database via Room.
+
+## Modifications
+- **UI / screens**: Edit the Activities in `app/src/main/java/com/example/persistenttimerapp/` and their matching layout XML in `app/src/main/res/layout/`.
+- **Data model**: Add or change fields on `Task`/`Category` under `data/entities/`, and update queries in `AppDao.kt`.
+- **Business logic**: `StudyViewModel.kt` is where new operations on tasks/categories should live; Activities call into it rather than touching the DAO directly.
+- **Dependencies**: Add libraries in `PersistentTimerApp/app/build.gradle.kts`, or update versions in `PersistentTimerApp/gradle/libs.versions.toml`.
 
 # Known Issues and Future Expansion
 ## Account Security
